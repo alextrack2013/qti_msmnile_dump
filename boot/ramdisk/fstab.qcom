@@ -1,0 +1,69 @@
+# Android fstab file.
+# The filesystem that contains the filesystem checker binary (typically /system) cannot
+# specify MF_CHECK, and must come before any filesystems that do specify MF_CHECK
+
+#TODO: Add 'check' as fs_mgr_flags with data partition.
+# Currently we dont have e2fsck compiled. So fs check would failed.
+# zhangjian@BSP.Fingerprint.Secure, 2020/10/13, change the initial permission of vendor/firmware_mnt
+
+#<src>                                                 <mnt_point>            <type>  <mnt_flags and options>                            <fs_mgr_flags>
+/dev/block/by-name/system                               /system                ext4    ro,barrier=1,discard                                 wait,avb,first_stage_mount
+/dev/block/by-name/vendor                               /vendor                ext4    ro,barrier=1,discard                                 wait,avb,first_stage_mount
+/dev/block/bootdevice/by-name/metadata                  /metadata              ext4    noatime,nosuid,nodev,discard                         wait,check,formattable
+/dev/block/bootdevice/by-name/cache                     /cache                 ext4    nosuid,noatime,nodev,barrier=1                       wait,check
+/dev/block/bootdevice/by-name/userdata                  /data                  ext4    noatime,nosuid,nodev,barrier=1,noauto_da_alloc,async_discard,errors=panic,inlinecrypt latemount,wait,check,resize,fileencryption=ice,wrappedkey,keydirectory=/metadata/vold/metadata_encryption,quota,reservedsize=128M
+/devices/platform/soc/8804000.sdhci/mmc_host*           /storage/sdcard1       vfat    nosuid,nodev                                         wait,voldmanaged=sdcard1:auto
+/devices/platform/soc/1da4000.ufshc_card/host*          /storage/sdcard1       vfat    nosuid,nodev                                         wait,voldmanaged=sdcard1:auto
+/dev/block/bootdevice/by-name/modem                     /vendor/firmware_mnt   vfat    ro,shortname=lower,uid=1000,gid=1000,dmask=222,fmask=333,context=u:object_r:firmware_file:s0 wait
+/dev/block/bootdevice/by-name/dsp                       /vendor/dsp            ext4    ro,nosuid,nodev,barrier=1                            wait
+/dev/block/bootdevice/by-name/persist                   /mnt/vendor/persist    ext4    noatime,nosuid,nodev,barrier=1                       wait
+/dev/block/bootdevice/by-name/bluetooth                 /vendor/bt_firmware    vfat    ro,shortname=lower,uid=1002,gid=3002,dmask=227,fmask=337,context=u:object_r:bt_firmware_file:s0 wait
+# Need to have this entry in here even though the mount point itself is no longer needed.
+# The update_engine code looks for this entry in order to determine the boot device address
+# and fails if it does not find it.
+/dev/block/bootdevice/by-name/misc                      /misc                  emmc    defaults                                             defaults
+/devices/platform/soc/*.ssusb/*.dwc3/xhci-hcd.*.auto*    /storage/usbotg    vfat    nosuid,nodev    wait,voldmanaged=usbotg:auto
+
+
+#ifdef OPLUS_FEATURE_STORAGE_MOUNT
+#Xinghui.Wang@ANDROID.BUILD., 2020/08/27,Add for qcom no super mount
+loop@/system/euclid/my_product.img              /mnt/vendor/my_product           ext4     ro                                                   nofail,first_stage_mount
+/mnt/vendor/my_product                          /my_product                       none     ro,bind                                              nofail,first_stage_mount
+loop@/system/euclid/my_bigball.img              /mnt/vendor/my_bigball           ext4     ro                                                   nofail,first_stage_mount
+/mnt/vendor/my_bigball                          /my_bigball                       none     ro,bind                                              nofail,first_stage_mount 
+loop@/system/euclid/my_heytap.img               /mnt/vendor/my_heytap            ext4     ro                                                   nofail,first_stage_mount
+/mnt/vendor/my_heytap                           /my_heytap                        none     ro,bind                                              nofail,first_stage_mount
+loop@/system/euclid/my_company.img              /mnt/vendor/my_company           ext4     ro                                                   nofail,first_stage_mount
+/mnt/vendor/my_company                          /my_company                       none     ro,bind                                              nofail,first_stage_mount
+loop@/system/euclid/my_preload.img              /mnt/vendor/my_preload           ext4     ro                                                   nofail,first_stage_mount
+/mnt/vendor/my_preload                          /my_preload                       none     ro,bind                                              nofail,first_stage_mount
+loop@/system/euclid/my_stock.img                /mnt/vendor/my_stock             ext4     ro                                                   nofail,first_stage_mount
+/mnt/vendor/my_stock                            /my_stock                         none     ro,bind                                              nofail,first_stage_mount
+loop@/system/euclid/my_region.img               /mnt/vendor/my_region            ext4     ro                                                   nofail,first_stage_mount
+/mnt/vendor/my_region                           /my_region                        none     ro,bind                                              nofail,first_stage_mount
+loop@/system/euclid/my_carrier.img              /mnt/vendor/my_carrier           ext4     ro                                                   nofail,first_stage_mount
+/mnt/vendor/my_carrier                          /my_carrier                       none     ro,bind                                              nofail,first_stage_mount
+loop@/system/euclid/my_engineering.img          /mnt/vendor/my_engineering       ext4     ro                                                   nofail,first_stage_mount
+/mnt/vendor/my_engineering                      /my_engineering                   none     ro,bind                                              nofail,first_stage_mount
+loop@/vendor/euclid/odm.img                     /mnt/vendor/odm                  ext4     ro                                                   nofail,first_stage_mount
+/mnt/vendor/odm                                 /odm                              none     ro,bind                                              nofail,first_stage_mount
+loop@/vendor/euclid/my_manifest.img             /mnt/vendor/my_manifest          ext4     ro                                                   nofail,first_stage_mount
+/mnt/vendor/my_manifest                         /my_manifest                      none     ro,bind                                              nofail,first_stage_mount
+#data/reserve
+loop@/data/reserve/reserve.img                  /mnt/vendor/my_reserve           ext4     ro                                                   nofail,latemount
+loop@/mnt/vendor/my_reserve/reserve/my_bigball.img    /mnt/vendor/my_bigball    ext4     ro                                                   nofail,latemount
+/mnt/vendor/my_bigball                         /my_bigball                       none     ro,bind                                              nofail,latemount
+loop@/mnt/vendor/my_reserve/reserve/my_heytap.img     /mnt/vendor/my_heytap     ext4     ro                                                   nofail,latemount
+/mnt/vendor/my_heytap                          /my_heytap                        none     ro,bind                                              nofail,latemount
+#endif
+
+#ifdef OPLUS_FEATURE_STORAGE
+#Xuefeng.Peng@ANDROID.STORAGE.0, 2019/01/27, Add for 5G dump mount point
+/dev/block/bootdevice/by-name/modemdump         /mnt/vendor/modemdump             ext4     nosuid,nodev,noatime,barrier=1,async_discard         check
+#endif
+#ifdef OPLUS_FEATURE_STORAGE
+#Runsheng.Pei@ANDROID.STORAGE.0, 2017/12/29, Add for new reserve partition
+/dev/block/by-name/oplusreserve2                 /mnt/vendor/opporeserve           ext4     nosuid,nodev,noatime,barrier=1                       wait,check,first_stage_mount,nofail
+/dev/block/by-name/oplusreserve2                 /mnt/vendor/oplusreserve           ext4     nosuid,nodev,noatime,barrier=1                       wait,check,first_stage_mount,nofail
+/dev/block/by-name/oplusreserve2      /mnt/oplus/op2            ext4   nosuid,nodev,noatime,barrier=1                           wait,check,first_stage_mount,nofail
+#endif

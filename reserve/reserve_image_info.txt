@@ -1,0 +1,25 @@
+# For all accepted properties, see BuildImage() in tools/releasetools/build_image.py
+mount_point=/my_preload
+partition_name=my_preload
+partition_name=my_preload
+squashfs_sparse_flag=-s
+fs_type=ext4
+journal_size=0
+use_dynamic_partition_size=true
+block_list=/work/jenkins/workspace/Build_S_Pkg/790149/code/source/oplus_ci_out/euclid_images/out/19081/intermediate/ota_target/IMAGES/my_preload.map
+ext_mkuserimg=mkuserimg_mke2fs
+erofs_mkuserimg=mkerofsimage.sh
+selinux_fc=/work/jenkins/workspace/Build_S_Pkg/790149/code/source/oplus_ci_out/euclid_images/out/19081/intermediate/ota_target/META/file_contexts.bin
+avb_avbtool=out/host/linux-x86/bin/avbtool
+avb_key_path=oplus/build/make/tools/euclid/local_debug_keys/customkey_rsa2048.pem
+avb_algorithm=SHA256_RSA2048
+avb_hashtree_enable=true
+avb_add_hashtree_footer_args= --prop com.android.build.my_preload.os_version:11 --prop com.android.build.my_preload.security_patch:2022-06-05
+# Properties from vendor/oplus/build/make/tools/euclid/dict.txt
+#extfs_sparse_flag=-s
+ext4_share_dup_blocks=true
+journal_size=0
+extfs_rsv_pct=0
+timestamp=1654025427
+uuid=9155b479-c8ea-4d33-8603-410d5e77220a
+hash_seed=9155b479-c8ea-4d33-8603-410d5e77220a
