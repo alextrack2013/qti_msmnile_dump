@@ -1,0 +1,6 @@
+#ifdef OPLUS_USE_DATA_RESERVE_IMG
+#read properties from oplus logical partitions which are late mounted
+on early-boot
+    read_reserve_property /mnt/vendor/my_heytap
+    read_reserve_property /mnt/vendor/my_bigball
+#endif
